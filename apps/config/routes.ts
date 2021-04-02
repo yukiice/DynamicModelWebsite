@@ -42,6 +42,13 @@
     path: '/list',
     component: './TableList',
   },
+  // basicList
+  {
+    name: 'list.basic-list',
+    icon: 'table',
+    path: '/basiclist',
+    component: './BasicList',
+  },
   {
     path: '/',
     redirect: '/welcome',

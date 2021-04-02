@@ -15,4 +15,11 @@ export default defineConfig({
   webpack5: {
     // lazyCompilation: {},
   },
+  //  proxy:{
+  //   "/api":{
+  //     target:`https://public-api-v2.aspirantzhang.com/api/admins?X-API-KEY=antd`,
+  //     changeOrigin:true,
+  //     // pathRewrite:{'^/api':''}
+  //   }
+  // }
 });
