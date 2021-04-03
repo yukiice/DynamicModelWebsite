@@ -1,16 +1,20 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 21:00:38
- * @LastEditTime: 2021-04-03 11:06:10
+ * @LastEditTime: 2021-04-03 16:12:05
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/index.tsx
  */
 import { memo, useState, useEffect } from 'react';
-import { Table, Space, Row, Col, Button, Pagination, Card } from 'antd';
+import { Table, Space, Row, Col, Pagination, Card } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useRequest } from 'umi';
+//引入样式等外部文件
 import styles from './index.less';
+// 引入组件
+import ActionBuilder from './components/ActionBuilder';
+import ColumnBuilder from './components/ColumnBuilder';
 function BasicList() {
   const [page, setPage] = useState(1);
   const [per_page, setPerPage] = useState(10);
@@ -22,6 +26,11 @@ function BasicList() {
     init.run();
   }, [page, per_page]);
 
+  const paginationChangeHandler = (_page: any, _per_page: any) => {
+    setPage(_page);
+    setPerPage(_per_page);
+  };
+
   const searchLayout = () => {};
   const beforeTableLayout = () => {
     return (
@@ -30,17 +39,10 @@ function BasicList() {
           ...
         </Col>
         <Col xs={24} sm={12} className={styles.r}>
-          <Space>
-            <Button type="primary">Add</Button>
-            <Button type="primary">Add2</Button>
-          </Space>
+          <Space>{ActionBuilder(init.data?.layout.tableToolBar)}</Space>
         </Col>
       </Row>
     );
-  };
-  const paginationChangeHandler = (_page: any, _per_page: any) => {
-    setPage(_page);
-    setPerPage(_per_page);
   };
 
   const afterTableLayout = () => {
@@ -72,7 +74,7 @@ function BasicList() {
         {beforeTableLayout()}
         <Table
           dataSource={init?.data?.dataSource}
-          columns={init?.data?.layout?.tableColumn.filter((item) => item.hideInColumn !== true)}
+          columns={ColumnBuilder(init?.data?.layout?.tableColumn)}
           pagination={false}
           loading={init.loading}
         />
