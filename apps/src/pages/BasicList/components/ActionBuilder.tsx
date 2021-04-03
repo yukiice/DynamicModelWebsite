@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-03 15:41:08
- * @LastEditTime: 2021-04-03 16:11:56
+ * @LastEditTime: 2021-04-03 16:48:55
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/ActionBuilder.tsx
@@ -9,11 +9,11 @@
 import { Button } from 'antd';
 
 // 导入类型
-import { ButtonType } from 'antd/lib/button';
+import type { ButtonType } from 'antd/lib/button';
 const ActionBuilder = (actions: BasicListApi.Action[] | undefined) => {
   return (actions || []).map((action) => {
     if (action.component === 'button') {
-      return <Button type={action?.type as ButtonType}>{action.text}</Button>;
+      return <Button key={action?.text} type={action?.type as ButtonType}>{action.text}</Button>;
     }
     return null;
   });

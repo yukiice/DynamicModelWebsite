@@ -40,10 +40,11 @@ const ColumnBuilder = (tableColumn: BasicListApi.TableColumn[] | undefined) => {
     }
   });
   // 组合id cloumns
-  const idColumn = [{
+  const idColumn :BasicListApi.TableColumn[] = [{
     title:'ID',
     dataIndex:'id',
     key:'id',
+    sorter:true
   }]
   return idColumn.concat(newColumns)
 };

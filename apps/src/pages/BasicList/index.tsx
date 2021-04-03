@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 21:00:38
- * @LastEditTime: 2021-04-03 16:12:05
+ * @LastEditTime: 2021-04-03 16:48:12
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/index.tsx
@@ -16,16 +16,29 @@ import styles from './index.less';
 import ActionBuilder from './components/ActionBuilder';
 import ColumnBuilder from './components/ColumnBuilder';
 function BasicList() {
+  // useState
   const [page, setPage] = useState(1);
   const [per_page, setPerPage] = useState(10);
-  const init = useRequest<{ data: BasicListApi.Data }>(
-    `https://public-api-v2.aspirantzhang.com/api/admins?X-API-KEY=antd&page=${page}&per_page=${per_page}`,
-  );
+  const [sortQuery, setSortQuery] = useState('');
 
+  // effect
   useEffect(() => {
     init.run();
-  }, [page, per_page]);
+  }, [page, per_page, sortQuery]);
 
+  const init = useRequest<{ data: BasicListApi.Data }>(
+    `https://public-api-v2.aspirantzhang.com/api/admins?X-API-KEY=antd&page=${page}&per_page=${per_page}${sortQuery}`,
+  );
+  // 表格事件
+  const TableChange = (_: any, __: any, sorter: any) => {
+    if (sorter.order === undefined) {
+      setSortQuery('');
+    } else {
+      const orderBy = sorter.order === 'ascend' ? 'asc' : 'desc';
+      setSortQuery(`&sort=${sorter.order}&order=${orderBy}`);
+    }
+  };
+  // 翻页事件
   const paginationChangeHandler = (_page: any, _per_page: any) => {
     setPage(_page);
     setPerPage(_per_page);
@@ -73,10 +86,12 @@ function BasicList() {
       <Card>
         {beforeTableLayout()}
         <Table
+          rowKey="id"
           dataSource={init?.data?.dataSource}
           columns={ColumnBuilder(init?.data?.layout?.tableColumn)}
           pagination={false}
           loading={init.loading}
+          onChange={TableChange}
         />
         {afterTableLayout()}
       </Card>
