@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-04 19:41:35
- * @LastEditTime: 2021-04-04 20:17:38
+ * @LastEditTime: 2021-04-04 21:36:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/data.d.ts
@@ -29,6 +29,7 @@ declare module ModalApi {
     dataIndex: string;
     key: string;
     type: string;
+    disabled: boolean;
     data: Datum2[];
   }
 
@@ -58,9 +59,20 @@ declare module ModalApi {
     actions: Action[];
   }
 
+  export interface DataSource {
+    id: number;
+    username: string;
+    display_name: string;
+    create_time: Date;
+    update_time: Date;
+    status: number;
+    groups: number[];
+  }
+
   export interface Data {
     page: Page;
     layout: Layout;
+    dataSource: DataSource;
   }
 
   export interface RootObject {
