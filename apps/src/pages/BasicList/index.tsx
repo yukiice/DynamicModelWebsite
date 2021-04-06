@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 21:00:38
- * @LastEditTime: 2021-04-04 20:03:49
+ * @LastEditTime: 2021-04-06 14:44:34
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/index.tsx
@@ -27,7 +27,7 @@ function BasicList() {
   useEffect(() => {
     init.run();
   }, [page, per_page, sortQuery]);
-  const init = useRequest<{ data: BasicListApi.Data }>(
+  const init = useRequest<{ data: BasicListApi.ListData }>(
     `https://public-api-v2.aspirantzhang.com/api/admins?X-API-KEY=antd&page=${page}&per_page=${per_page}${sortQuery}`,
   );
   // 表格事件
@@ -43,6 +43,19 @@ function BasicList() {
   const paginationChangeHandler = (_page: any, _per_page: any) => {
     setPage(_page);
     setPerPage(_per_page);
+  };
+
+  // action
+  const actionHandler = (action: BasicListApi.Action) => {
+    switch (action.action) {
+      case 'modal':
+        setModalUrl(action.uri as string);
+        setModalVisible(true);
+        break;
+
+      default:
+        break;
+    }
   };
 
   const searchLayout = () => {};
@@ -78,7 +91,7 @@ function BasicList() {
           </Space>
         </Col>
         <Col xs={24} sm={12} className={styles.r}>
-          <Space>{ActionBuilder(init.data?.layout.tableToolBar)}</Space>
+          <Space>{ActionBuilder(init.data?.layout.tableToolBar, actionHandler)}</Space>
         </Col>
       </Row>
     );

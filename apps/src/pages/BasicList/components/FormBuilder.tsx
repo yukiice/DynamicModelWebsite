@@ -1,14 +1,14 @@
 /*
  * @Author: your name
  * @Date: 2021-04-04 19:57:04
- * @LastEditTime: 2021-04-04 22:10:45
+ * @LastEditTime: 2021-04-06 14:13:10
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/FormBuilder.tsx
  */
 // import { memo } from 'react';
 import { Input, Form, DatePicker, TreeSelect,Switch } from 'antd';
-function FormBuilder(data: ModalApi.Datum[] | undefined) {
+function FormBuilder(data: BasicListApi.Field[] | undefined) {
   return (
     <>
       {(data || []).map((item) => {

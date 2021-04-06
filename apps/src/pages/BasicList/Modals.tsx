@@ -1,24 +1,25 @@
 /*
  * @Author: your name
  * @Date: 2021-04-04 17:06:01
- * @LastEditTime: 2021-04-06 11:04:16
+ * @LastEditTime: 2021-04-06 14:16:40
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/Modal.tsx
  */
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect} from 'react';
 import { useRequest } from 'umi';
 import { Modal, Form, Input } from 'antd';
 import moment from 'moment';
 import FormBuilder from './components/FormBuilder';
 import ActionBuilder from './components/ActionBuilder';
+import { typeFilter, submitFieldAdaptor } from './helper';
 function Modals(props: any) {
   const { modelVisible, modalOnCancel, modalUrl } = props;
 
   // 改变Form
   const [form] = Form.useForm();
   // 获取接口数据
-  const init = useRequest<{ data: ModalApi.Data }>(`${modalUrl}`, {
+  const init = useRequest<{ data: BasicListApi.PageData }>(`${modalUrl}`, {
     manual: true,
   });
 
@@ -30,10 +31,8 @@ function Modals(props: any) {
         url: `https://public-api-v2.aspirantzhang.com${uri}`,
         method: method,
         data: {
-          ...formValues,
+          ...submitFieldAdaptor(formValues),
           'X-API-KEY': 'antd',
-          create_time: moment(formValues.create_time).format(),
-          update_time: moment(formValues.update_time).format(),
         },
       };
     },
@@ -48,28 +47,6 @@ function Modals(props: any) {
     modelVisible && init.run();
   }, [modelVisible]);
 
-  // 类型过滤器
-  const typeFilter = (data: ModalApi.Data) => {
-    if (data?.layout?.tabs && data?.dataSource) {
-      const result = {};
-      data.layout.tabs.forEach((tap) => {
-        tap.data.forEach((item) => {
-          switch (item.type) {
-            case 'datetime':
-              result[item.key] = moment(data.dataSource[item.key]);
-              break;
-            default:
-              result[item.key] = data.dataSource[item.key];
-              break;
-          }
-        });
-      });
-      // 如果存在需要过滤的属性的返回值
-      return result;
-    }
-    // 默认返回值
-    return {};
-  };
   // 表单赋值
   useEffect(() => {
     init.data && form.setFieldsValue(typeFilter(init.data));
@@ -86,7 +63,7 @@ function Modals(props: any) {
     request.run(value);
   };
 
-  const actionHandler = (action: ModalApi.Action) => {
+  const actionHandler = (action: BasicListApi.Action) => {
     //  1.表单提交 2.拿到数据  3.发送请求
     switch (action.action) {
       case 'submit':
