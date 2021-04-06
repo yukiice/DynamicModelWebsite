@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-04 19:41:35
- * @LastEditTime: 2021-04-04 21:36:23
+ * @LastEditTime: 2021-04-06 10:39:59
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/data.d.ts
@@ -49,8 +49,11 @@ declare module ModalApi {
   }
 
   export interface Action {
+    uri: string;
+    action: string;
     name: string;
     title: string;
+    method: string;
     data: Datum3[];
   }
 
