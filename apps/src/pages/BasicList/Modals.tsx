@@ -1,14 +1,14 @@
 /*
  * @Author: your name
  * @Date: 2021-04-04 17:06:01
- * @LastEditTime: 2021-04-06 14:16:40
+ * @LastEditTime: 2021-04-06 17:24:35
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/Modal.tsx
  */
 import { memo, useEffect} from 'react';
 import { useRequest } from 'umi';
-import { Modal, Form, Input } from 'antd';
+import { Modal, Form, Input,message } from 'antd';
 import moment from 'moment';
 import FormBuilder from './components/FormBuilder';
 import ActionBuilder from './components/ActionBuilder';
@@ -19,13 +19,18 @@ function Modals(props: any) {
   // 改变Form
   const [form] = Form.useForm();
   // 获取接口数据
-  const init = useRequest<{ data: BasicListApi.PageData }>(`${modalUrl}`, {
+  const init = useRequest<{ data: BasicListApi.PageData }>(`https://public-api-v2.aspirantzhang.com${modalUrl}?X-API-KEY=antd`, {
     manual: true,
+    // 错误捕捉
+    onError:()=>{
+      modalOnCancel()
+    }
   });
 
   // 表单提交请求
   const request = useRequest(
     (value) => {
+      message.loading({content:'Please wait a moment ......',key:'process',duration:0})
       const { uri, method, ...formValues } = value;
       return {
         url: `https://public-api-v2.aspirantzhang.com${uri}`,
@@ -38,6 +43,16 @@ function Modals(props: any) {
     },
     {
       manual: true,
+      onSuccess:(data)=>{
+        modalOnCancel(true)
+        message.success({
+          content:data.message,
+          key:'process'
+        })
+      },
+      formatResult:(res:any)=>{
+        return res
+      }
     },
   );
   // useEffect
@@ -70,7 +85,12 @@ function Modals(props: any) {
         form.setFieldsValue({ uri: action.uri, method: action.method });
         form.submit();
         break;
-
+        case 'cancel':
+          modalOnCancel()
+          break;
+          case 'reset':
+          form.resetFields()
+          break;
       default:
         break;
     }
@@ -82,7 +102,7 @@ function Modals(props: any) {
         title={init?.data?.page.title}
         visible={modelVisible}
         onCancel={modalOnCancel}
-        footer={ActionBuilder(init?.data?.layout?.actions[0]?.data, actionHandler)}
+        footer={ActionBuilder(init?.data?.layout?.actions[0]?.data, actionHandler,request.loading)}
         maskClosable={false}
       >
         <Form

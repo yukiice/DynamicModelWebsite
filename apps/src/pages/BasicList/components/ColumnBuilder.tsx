@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-03 15:39:46
- * @LastEditTime: 2021-04-06 14:38:09
+ * @LastEditTime: 2021-04-06 16:07:12
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/ColumnBuilder.tsx
@@ -10,7 +10,11 @@
 import { Tag, Space } from 'antd';
 import moment from 'moment';
 import ActionBuilder from './ActionBuilder';
-const ColumnBuilder = (tableColumn: BasicListApi.Field[] | undefined) => {
+const ColumnBuilder = (
+  tableColumn: BasicListApi.Field[] | undefined,
+  actionHandler: BasicListApi.ActionHandler,
+  loading: boolean,
+) => {
   const newColumns: BasicListApi.Field[] = [];
   (tableColumn || []).forEach((row) => {
     if (!row.hideInColumn) {
@@ -29,8 +33,8 @@ const ColumnBuilder = (tableColumn: BasicListApi.Field[] | undefined) => {
           };
           break;
         case 'actions':
-          row.render = (value: any) => {
-            return <Space>{ActionBuilder(row.actions)}</Space>;
+          row.render = (_: any,record:any) => {
+            return <Space>{ActionBuilder(row.actions, actionHandler,false,record)}</Space>;
           };
           break;
         default:

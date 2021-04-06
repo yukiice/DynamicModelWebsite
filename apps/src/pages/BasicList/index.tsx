@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 21:00:38
- * @LastEditTime: 2021-04-06 14:44:34
+ * @LastEditTime: 2021-04-06 17:44:04
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/index.tsx
@@ -45,14 +45,28 @@ function BasicList() {
     setPerPage(_per_page);
   };
 
+  // 关闭弹窗
+  const hideModal = (reload = false) => {
+    setModalVisible(false);
+    reload && init.run();
+  };
+
   // action
-  const actionHandler = (action: BasicListApi.Action) => {
+  const actionHandler = (action: BasicListApi.Action, record: any) => {
     switch (action.action) {
       case 'modal':
-        setModalUrl(action.uri as string);
+        // 正则处理
+
+        setModalUrl(
+          action.uri?.replace(/:\w+/g, (field) => {
+            return record[field.replace(':', '')];
+          }) as string,
+        );
         setModalVisible(true);
         break;
-
+        case "reload":
+          init.run()
+          break;
       default:
         break;
     }
@@ -127,7 +141,7 @@ function BasicList() {
         <Table
           rowKey="id"
           dataSource={init?.data?.dataSource}
-          columns={ColumnBuilder(init?.data?.layout?.tableColumn)}
+          columns={ColumnBuilder(init?.data?.layout?.tableColumn, actionHandler, false)}
           pagination={false}
           loading={init.loading}
           onChange={TableChange}
@@ -135,13 +149,7 @@ function BasicList() {
         {afterTableLayout()}
       </Card>
       {/* 弹窗组件 */}
-      <Modals
-        modelVisible={modalVisible}
-        modalOnCancel={() => {
-          setModalVisible(false);
-        }}
-        modalUrl={modalUrl}
-      ></Modals>
+      <Modals modelVisible={modalVisible} modalOnCancel={hideModal} modalUrl={modalUrl}></Modals>
     </PageContainer>
   );
 }

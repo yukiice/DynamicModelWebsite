@@ -107,22 +107,37 @@ const codeMessage = {
  * @see https://beta-pro.ant.design/docs/request-cn
  */
 const errorHandler = (error: ResponseError) => {
-  const { response } = error;
-  if (response && response.status) {
-    const errorText = codeMessage[response.status] || response.statusText;
-    const { status, url } = response;
-
-    notification.error({
-      message: `请求错误 ${status}: ${url}`,
-      description: errorText,
-    });
-  }
-
-  if (!response) {
-    notification.error({
-      description: '您的网络发生异常，无法连接服务器',
-      message: '网络异常',
-    });
+  console.log(error, '这是报错信息');
+  switch (error.name) {
+    case 'BizError':
+      if (error.data.message) {
+        notification.error({
+          message: error.data.message,
+        });
+      }
+      break;
+  case 'ResponseError':
+      if (error.data.message) {
+        notification.error({
+          message: error.response.status,
+          description: error.response.statusText,
+        });
+      }
+    break;
+    case 'TypeError':
+      if (error.data.message) {
+        notification.error({
+          message: '当前网络繁忙，请稍后再试',
+        });
+      }
+    break;
+    default:
+      if (error.data.message) {
+        notification.error({
+          message:'服务器繁忙或出现了错误,请联系管理员'
+        });
+      }
+      break;
   }
   throw error;
 };
