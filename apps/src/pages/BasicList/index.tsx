@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 21:00:38
- * @LastEditTime: 2021-04-07 09:20:58
+ * @LastEditTime: 2021-04-07 15:57:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/index.tsx
@@ -10,7 +10,8 @@ import { memo, useState, useEffect } from 'react';
 import { Table, Space, Row, Col, Pagination, Card, Button, Modal } from 'antd';
 import { message } from 'antd';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
-import { useRequest } from 'umi';
+import { useRequest, useIntl } from 'umi';
+import { useSessionStorageState } from 'ahooks';
 //引入样式等外部文件
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import styles from './index.less';
@@ -19,6 +20,7 @@ import ActionBuilder from './components/ActionBuilder';
 import ColumnBuilder from './components/ColumnBuilder';
 import Modals from './Modals';
 function BasicList() {
+  const intl = useIntl();
   const { confirm } = Modal;
   // useState
   const [page, setPage] = useState(1);
@@ -28,7 +30,10 @@ function BasicList() {
   const [modalUrl, setModalUrl] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
-  const [tableColumns, setTableColumns] = useState<BasicListApi.Field[]>([]);
+  const [tableColumns, setTableColumns] = useSessionStorageState<BasicListApi.Field[]>(
+    'basicListTableColumns',
+    [],
+  );
   // effect
   useEffect(() => {
     init.run();
@@ -90,7 +95,7 @@ function BasicList() {
 
   // 左侧选择
   const rowSelection = {
-    selectedRowKeys: selectedRowKeys,
+    selectedRowKeys,
     // selectedRows:selectedRows,
     onChange: (_selectedRowKeys: any, _selectedRows: any) => {
       setSelectedRowKeys(_selectedRowKeys);
@@ -100,26 +105,25 @@ function BasicList() {
 
   // 删除弹窗的column显示
   const deleteColumn = () => {
-    return [tableColumns[0] || {}, tableColumns[1] || {}];
+    return tableColumns ? [tableColumns[0] || {}, tableColumns[1] || {}] : [];
   };
   // 删除弹窗内容
-  const batchOverView = () => {
+  function batchOverView(dataSource: BasicListApi.Field[]) {
     return (
       <Table
         rowKey="id"
         columns={deleteColumn()}
-        dataSource={selectedRows}
+        dataSource={dataSource}
         pagination={false}
       ></Table>
     );
-  };
+  }
 
   // action
   function actionHandler(action: BasicListApi.Action, record: any) {
     switch (action.action) {
       case 'modal':
         // 正则处理
-
         setModalUrl(
           action.uri?.replace(/:\w+/g, (field) => {
             return record[field.replace(':', '')];
@@ -131,11 +135,23 @@ function BasicList() {
       case 'reload':
         init.run();
         break;
+      case 'deletePermanently':
+      case 'restore':
       case 'delete':
+        const operationName = intl.formatMessage({
+          id: `basic-list.list.actionHandler.operation.${action.action}`,
+        });
         confirm({
-          title: '删除确认',
+          title: intl.formatMessage(
+            {
+              id: 'basic-list.list.actionHandler.confirmTitle',
+            },
+            {
+              operationName: operationName,
+            },
+          ),
           icon: <ExclamationCircleOutlined />,
-          content: batchOverView(),
+          content: batchOverView(Object.keys(record).length ? [record] : selectedRows),
           okText: 'Yes',
           okType: 'danger',
           cancelText: 'No',
@@ -143,8 +159,8 @@ function BasicList() {
             return request.run({
               uri: action.uri,
               method: action.method,
-              type: 'delete',
-              ids: selectedRowKeys,
+              type: action.action,
+              ids: Object.keys(record).length ? [record.id] : selectedRowKeys,
             });
           },
         });

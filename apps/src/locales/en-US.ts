@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2021-04-01 20:53:06
+ * @LastEditTime: 2021-04-07 15:42:46
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: /DynamicModelWebsite/apps/src/locales/en-US.ts
+ */
 import component from './en-US/component';
 import globalHeader from './en-US/globalHeader';
 import menu from './en-US/menu';
@@ -5,7 +13,7 @@ import pwa from './en-US/pwa';
 import settingDrawer from './en-US/settingDrawer';
 import settings from './en-US/settings';
 import pages from './en-US/pages';
-
+import basicList from './en-US/basicList'
 export default {
   'navBar.lang': 'Languages',
   'layout.user.link.help': 'Help',
@@ -21,4 +29,5 @@ export default {
   ...pwa,
   ...component,
   ...pages,
+  ...basicList
 };

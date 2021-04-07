@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2021-04-01 20:53:06
+ * @LastEditTime: 2021-04-07 15:52:34
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: /DynamicModelWebsite/apps/src/locales/zh-CN.ts
+ */
 import component from './zh-CN/component';
 import globalHeader from './zh-CN/globalHeader';
 import menu from './zh-CN/menu';
@@ -5,7 +13,7 @@ import pwa from './zh-CN/pwa';
 import settingDrawer from './zh-CN/settingDrawer';
 import settings from './zh-CN/settings';
 import pages from './zh-CN/pages';
-
+import basicList from './zh-CN/basicList'
 export default {
   'navBar.lang': '语言',
   'layout.user.link.help': '帮助',
@@ -21,4 +29,5 @@ export default {
   ...settings,
   ...pwa,
   ...component,
+  ...basicList
 };
