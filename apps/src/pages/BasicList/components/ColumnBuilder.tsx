@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-03 15:39:46
- * @LastEditTime: 2021-04-06 20:29:00
+ * @LastEditTime: 2021-04-07 16:31:58
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/ColumnBuilder.tsx
@@ -13,7 +13,7 @@ import ActionBuilder from './ActionBuilder';
 const ColumnBuilder = (
   tableColumn: BasicListApi.Field[] | undefined,
   actionHandler: BasicListApi.ActionHandler,
-  loading =  false,
+  loading = false,
 ) => {
   const newColumns: BasicListApi.Field[] = [];
   (tableColumn || []).forEach((row) => {
@@ -33,8 +33,8 @@ const ColumnBuilder = (
           };
           break;
         case 'actions':
-          row.render = (_: any,record:any) => {
-            return <Space>{ActionBuilder(row.actions, actionHandler,false,record)}</Space>;
+          row.render = (_: any, record: any) => {
+            return <Space>{ActionBuilder(row.actions, actionHandler, loading, record)}</Space>;
           };
           break;
         default:

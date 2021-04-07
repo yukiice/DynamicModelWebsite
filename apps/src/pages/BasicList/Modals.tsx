@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-04 17:06:01
- * @LastEditTime: 2021-04-07 15:57:07
+ * @LastEditTime: 2021-04-07 16:29:39
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/Modal.tsx
@@ -46,7 +46,7 @@ function Modals(props: any) {
       onSuccess:(data)=>{
         modalOnCancel(true)
         message.success({
-          content:data.message,
+          content:data?.message,
           key:'process'
         })
       },
@@ -102,7 +102,7 @@ function Modals(props: any) {
         title={init?.data?.page.title}
         visible={modelVisible}
         onCancel={modalOnCancel}
-        footer={ActionBuilder(init?.data?.layout?.actions[0]?.data, actionHandler,request.loading)}
+        footer={ActionBuilder(init?.data?.layout?.actions[0]?.data, actionHandler,request?.loading)}
         maskClosable={false}
         forceRender
       >

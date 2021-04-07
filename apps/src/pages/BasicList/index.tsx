@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 21:00:38
- * @LastEditTime: 2021-04-07 15:57:38
+ * @LastEditTime: 2021-04-07 16:26:10
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/index.tsx
@@ -23,8 +23,7 @@ function BasicList() {
   const intl = useIntl();
   const { confirm } = Modal;
   // useState
-  const [page, setPage] = useState(1);
-  const [per_page, setPerPage] = useState(10);
+  const [pageQuery, setPageQuery] = useState('');
   const [sortQuery, setSortQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [modalUrl, setModalUrl] = useState('');
@@ -37,9 +36,12 @@ function BasicList() {
   // effect
   useEffect(() => {
     init.run();
-  }, [page, per_page, sortQuery]);
+  }, [pageQuery, sortQuery]);
+  useEffect(() => {
+    modalUrl && setModalVisible(true);
+  }, [modalUrl]);
   const init = useRequest<{ data: BasicListApi.ListData }>(
-    `https://public-api-v2.aspirantzhang.com/api/admins?X-API-KEY=antd&page=${page}&per_page=${per_page}${sortQuery}`,
+    `https://public-api-v2.aspirantzhang.com/api/admins?X-API-KEY=antd${pageQuery}${sortQuery}`,
   );
   const request = useRequest(
     (value: any) => {
@@ -58,7 +60,7 @@ function BasicList() {
       manual: true,
       onSuccess: (data) => {
         message.success({
-          content: data.message,
+          content: data?.message,
           key: 'process',
         });
       },
@@ -82,9 +84,8 @@ function BasicList() {
     }
   };
   // 翻页事件
-  const paginationChangeHandler = (_page: any, _per_page: any) => {
-    setPage(_page);
-    setPerPage(_per_page);
+  const paginationChangeHandler = (page: any, per_page: any) => {
+    setPageQuery(`&page=${page}&per_page=${per_page}`);
   };
 
   // 关闭弹窗
@@ -120,7 +121,7 @@ function BasicList() {
   }
 
   // action
-  function actionHandler(action: BasicListApi.Action, record: any) {
+  function actionHandler(action: BasicListApi.Action, record: BasicListApi.Field) {
     switch (action.action) {
       case 'modal':
         // 正则处理
