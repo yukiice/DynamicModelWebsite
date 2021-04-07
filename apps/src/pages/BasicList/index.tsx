@@ -1,28 +1,34 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 21:00:38
- * @LastEditTime: 2021-04-06 17:44:04
+ * @LastEditTime: 2021-04-07 09:20:58
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/index.tsx
  */
 import { memo, useState, useEffect } from 'react';
-import { Table, Space, Row, Col, Pagination, Card, Button } from 'antd';
-import { PageContainer } from '@ant-design/pro-layout';
+import { Table, Space, Row, Col, Pagination, Card, Button, Modal } from 'antd';
+import { message } from 'antd';
+import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import { useRequest } from 'umi';
 //引入样式等外部文件
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import styles from './index.less';
 // 引入组件
 import ActionBuilder from './components/ActionBuilder';
 import ColumnBuilder from './components/ColumnBuilder';
 import Modals from './Modals';
 function BasicList() {
+  const { confirm } = Modal;
   // useState
   const [page, setPage] = useState(1);
   const [per_page, setPerPage] = useState(10);
   const [sortQuery, setSortQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [modalUrl, setModalUrl] = useState('');
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [tableColumns, setTableColumns] = useState<BasicListApi.Field[]>([]);
   // effect
   useEffect(() => {
     init.run();
@@ -30,6 +36,37 @@ function BasicList() {
   const init = useRequest<{ data: BasicListApi.ListData }>(
     `https://public-api-v2.aspirantzhang.com/api/admins?X-API-KEY=antd&page=${page}&per_page=${per_page}${sortQuery}`,
   );
+  const request = useRequest(
+    (value: any) => {
+      message.loading({ content: 'Please wait a moment ......', key: 'process', duration: 0 });
+      const { uri, method, ...formValues } = value;
+      return {
+        url: `https://public-api-v2.aspirantzhang.com${uri}`,
+        method: method,
+        data: {
+          ...formValues,
+          'X-API-KEY': 'antd',
+        },
+      };
+    },
+    {
+      manual: true,
+      onSuccess: (data) => {
+        message.success({
+          content: data.message,
+          key: 'process',
+        });
+      },
+      formatResult: (res: any) => {
+        return res;
+      },
+    },
+  );
+  useEffect(() => {
+    if (init?.data?.layout.tableColumn) {
+      setTableColumns(ColumnBuilder(init?.data?.layout?.tableColumn, actionHandler));
+    }
+  }, [init?.data?.layout?.tableColumn]);
   // 表格事件
   const TableChange = (_: any, __: any, sorter: any) => {
     if (sorter.order === undefined) {
@@ -51,8 +88,34 @@ function BasicList() {
     reload && init.run();
   };
 
+  // 左侧选择
+  const rowSelection = {
+    selectedRowKeys: selectedRowKeys,
+    // selectedRows:selectedRows,
+    onChange: (_selectedRowKeys: any, _selectedRows: any) => {
+      setSelectedRowKeys(_selectedRowKeys);
+      setSelectedRows(_selectedRows);
+    },
+  };
+
+  // 删除弹窗的column显示
+  const deleteColumn = () => {
+    return [tableColumns[0] || {}, tableColumns[1] || {}];
+  };
+  // 删除弹窗内容
+  const batchOverView = () => {
+    return (
+      <Table
+        rowKey="id"
+        columns={deleteColumn()}
+        dataSource={selectedRows}
+        pagination={false}
+      ></Table>
+    );
+  };
+
   // action
-  const actionHandler = (action: BasicListApi.Action, record: any) => {
+  function actionHandler(action: BasicListApi.Action, record: any) {
     switch (action.action) {
       case 'modal':
         // 正则处理
@@ -62,15 +125,34 @@ function BasicList() {
             return record[field.replace(':', '')];
           }) as string,
         );
+        ``;
         setModalVisible(true);
         break;
-        case "reload":
-          init.run()
-          break;
+      case 'reload':
+        init.run();
+        break;
+      case 'delete':
+        confirm({
+          title: '删除确认',
+          icon: <ExclamationCircleOutlined />,
+          content: batchOverView(),
+          okText: 'Yes',
+          okType: 'danger',
+          cancelText: 'No',
+          onOk() {
+            return request.run({
+              uri: action.uri,
+              method: action.method,
+              type: 'delete',
+              ids: selectedRowKeys,
+            });
+          },
+        });
+        break;
       default:
         break;
     }
-  };
+  }
 
   const searchLayout = () => {};
   const beforeTableLayout = () => {
@@ -133,6 +215,14 @@ function BasicList() {
     );
   };
 
+  const batchToolBar = () => {
+    return (
+      selectedRowKeys.length > 0 && (
+        <Space>{ActionBuilder(init?.data?.layout?.batchToolBar, actionHandler)}</Space>
+      )
+    );
+  };
+
   return (
     <PageContainer>
       {searchLayout()}
@@ -141,15 +231,17 @@ function BasicList() {
         <Table
           rowKey="id"
           dataSource={init?.data?.dataSource}
-          columns={ColumnBuilder(init?.data?.layout?.tableColumn, actionHandler, false)}
+          columns={tableColumns}
           pagination={false}
           loading={init.loading}
           onChange={TableChange}
+          rowSelection={rowSelection}
         />
         {afterTableLayout()}
       </Card>
       {/* 弹窗组件 */}
       <Modals modelVisible={modalVisible} modalOnCancel={hideModal} modalUrl={modalUrl}></Modals>
+      <FooterToolbar extra={batchToolBar()} />
     </PageContainer>
   );
 }

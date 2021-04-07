@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-03 15:39:46
- * @LastEditTime: 2021-04-06 16:07:12
+ * @LastEditTime: 2021-04-06 20:29:00
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/ColumnBuilder.tsx
@@ -13,7 +13,7 @@ import ActionBuilder from './ActionBuilder';
 const ColumnBuilder = (
   tableColumn: BasicListApi.Field[] | undefined,
   actionHandler: BasicListApi.ActionHandler,
-  loading: boolean,
+  loading =  false,
 ) => {
   const newColumns: BasicListApi.Field[] = [];
   (tableColumn || []).forEach((row) => {
