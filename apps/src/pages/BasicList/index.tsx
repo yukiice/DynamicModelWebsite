@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 21:00:38
- * @LastEditTime: 2021-04-07 16:26:10
+ * @LastEditTime: 2021-04-08 11:26:51
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/index.tsx
@@ -10,7 +10,7 @@ import { memo, useState, useEffect } from 'react';
 import { Table, Space, Row, Col, Pagination, Card, Button, Modal } from 'antd';
 import { message } from 'antd';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
-import { useRequest, useIntl } from 'umi';
+import { useRequest, useIntl,history } from 'umi';
 import { useSessionStorageState } from 'ahooks';
 //引入样式等外部文件
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -166,6 +166,13 @@ function BasicList() {
           },
         });
         break;
+        case "page":
+          // 对uri进行处理
+          const uri = action.uri?.replace(/:\w+/g, (field) => {
+            return record[field.replace(':', '')];
+          }) as string
+          history.push(`/basic-list${uri}`);
+          break;
       default:
         break;
     }

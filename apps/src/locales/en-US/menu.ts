@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2021-04-01 20:53:06
+ * @LastEditTime: 2021-04-07 17:16:17
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /DynamicModelWebsite/apps/src/locales/en-US/menu.ts
+ */
 export default {
   'menu.welcome': 'Welcome',
   'menu.more-blocks': 'More Blocks',
@@ -24,6 +32,7 @@ export default {
   'menu.list': 'List',
   'menu.list.table-list': 'Search Table',
   'menu.list.basic-list': 'Basic List',
+  'menu.list.singlepage': 'Single Page',
   'menu.list.card-list': 'Card List',
   'menu.list.search-list': 'Search List',
   'menu.list.search-list.articles': 'Search List(articles)',
