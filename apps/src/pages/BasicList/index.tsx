@@ -1,27 +1,32 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 21:00:38
- * @LastEditTime: 2021-04-08 11:26:51
+ * @LastEditTime: 2021-04-08 18:00:13
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/index.tsx
  */
 import { memo, useState, useEffect } from 'react';
-import { Table, Space, Row, Col, Pagination, Card, Button, Modal } from 'antd';
+import { Table, Space, Row, Col, Pagination, Card, Button, Modal, Tooltip, Form } from 'antd';
 import { message } from 'antd';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
-import { useRequest, useIntl,history } from 'umi';
-import { useSessionStorageState } from 'ahooks';
+import { useRequest, useIntl, history } from 'umi';
+import { useSessionStorageState, useToggle } from 'ahooks';
+import { stringify } from 'query-string';
 //引入样式等外部文件
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import styles from './index.less';
 // 引入组件
 import ActionBuilder from './components/ActionBuilder';
 import ColumnBuilder from './components/ColumnBuilder';
+import SearchBuilder from './components/SearchBuilder';
 import Modals from './Modals';
+import { submitFieldAdaptor } from './helper';
+
 function BasicList() {
   const intl = useIntl();
   const { confirm } = Modal;
+  const [searchForm] = Form.useForm();
   // useState
   const [pageQuery, setPageQuery] = useState('');
   const [sortQuery, setSortQuery] = useState('');
@@ -33,6 +38,7 @@ function BasicList() {
     'basicListTableColumns',
     [],
   );
+  const [searchVisible, setSearchVisible] = useToggle(false);
   // effect
   useEffect(() => {
     init.run();
@@ -40,9 +46,15 @@ function BasicList() {
   useEffect(() => {
     modalUrl && setModalVisible(true);
   }, [modalUrl]);
-  const init = useRequest<{ data: BasicListApi.ListData }>(
-    `https://public-api-v2.aspirantzhang.com/api/admins?X-API-KEY=antd${pageQuery}${sortQuery}`,
-  );
+  const init = useRequest<{ data: BasicListApi.ListData }>((values: any) => {
+    return {
+      url: `https://public-api-v2.aspirantzhang.com/api/admins?X-API-KEY=antd${pageQuery}${sortQuery}`,
+      params: values,
+      paramsSerializer: (params: any) => {
+        return stringify(params, { arrayFormat: 'comma', skipEmptyString: true, skipNull: true });
+      },
+    };
+  });
   const request = useRequest(
     (value: any) => {
       message.loading({ content: 'Please wait a moment ......', key: 'process', duration: 0 });
@@ -166,52 +178,72 @@ function BasicList() {
           },
         });
         break;
-        case "page":
-          // 对uri进行处理
-          const uri = action.uri?.replace(/:\w+/g, (field) => {
-            return record[field.replace(':', '')];
-          }) as string
-          history.push(`/basic-list${uri}`);
-          break;
+      case 'page':
+        // 对uri进行处理
+        const uri = action.uri?.replace(/:\w+/g, (field) => {
+          return record[field.replace(':', '')];
+        }) as string;
+        history.push(`/basic-list${uri}`);
+        break;
       default:
         break;
     }
   }
 
-  const searchLayout = () => {};
+  // search搜索事件
+  const onFinish = (value: any) => {
+    init.run(submitFieldAdaptor(value));
+  };
+
+  // search组件
+  const searchLayout = () => {
+    return (
+      searchVisible && (
+        <Card>
+          <Form form={searchForm} labelCol={{ span: 8 }} onFinish={onFinish}>
+            <Row gutter={8}>{SearchBuilder(init?.data?.layout?.tableColumn)}</Row>
+            <Row>
+              <Col offset={21} xs={3}>
+                <Space>
+                  <Button type="primary" htmlType="submit">
+                    Submit
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      init.run();
+                      searchForm.resetFields();
+                    }}
+                  >
+                    Clear
+                  </Button>
+                </Space>
+              </Col>
+            </Row>
+          </Form>
+        </Card>
+      )
+    );
+  };
   const beforeTableLayout = () => {
     return (
       <Row>
         <Col xs={24} sm={12}>
-          <Space>
-            <Button
-              type="primary"
-              onClick={() => {
-                setModalVisible(true);
-                setModalUrl(
-                  `https://public-api-v2.aspirantzhang.com/api/admins/add?X-API-KEY=antd`,
-                );
-              }}
-            >
-              add
-            </Button>
-            {/* 管理员ADD */}
-
-            <Button
-              type="default"
-              onClick={() => {
-                setModalVisible(true);
-                setModalUrl(
-                  `https://public-api-v2.aspirantzhang.com/api/admins/206?X-API-KEY=antd`,
-                );
-              }}
-            >
-              adminAdd
-            </Button>
-          </Space>
+          ...
         </Col>
         <Col xs={24} sm={12} className={styles.r}>
-          <Space>{ActionBuilder(init.data?.layout.tableToolBar, actionHandler)}</Space>
+          <Space>
+            <Tooltip title="search">
+              <Button
+                shape="circle"
+                icon={<SearchOutlined></SearchOutlined>}
+                onClick={() => {
+                  setSearchVisible.toggle();
+                }}
+                type={searchVisible ? 'primary' : 'default'}
+              ></Button>
+            </Tooltip>
+            {ActionBuilder(init.data?.layout.tableToolBar, actionHandler)}
+          </Space>
         </Col>
       </Row>
     );
