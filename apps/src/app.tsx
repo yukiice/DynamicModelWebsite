@@ -1,13 +1,14 @@
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import { notification } from 'antd';
+import { notification ,message} from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import type { ResponseError } from 'umi-request';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
-import { BookOutlined, LinkOutlined } from '@ant-design/icons';
+import { currentMenu as queryCurrentMenu } from './services/ant-design-pro/api';
+// import { BookOutlined, LinkOutlined } from '@ant-design/icons';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -23,7 +24,9 @@ export const initialStateConfig = {
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
+  currentMenu?: any;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  fetchUserMenu?: () => Promise<API.CurrentMenu | undefined>;
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -34,12 +37,23 @@ export async function getInitialState(): Promise<{
     }
     return undefined;
   };
+  const fetchMenu = async () => {
+    try {
+      const currentMenu = await queryCurrentMenu();
+      return currentMenu;
+    } catch (error) {
+      message.error('菜单列表渲染失败');
+    }
+    return undefined;
+  };
   // 如果是登录页面，不执行
   if (history.location.pathname !== loginPath) {
     const currentUser = await fetchUserInfo();
+    const currentMenu = await fetchMenu();
     return {
       fetchUserInfo,
       currentUser,
+      currentMenu,
       settings: {},
     };
   }
@@ -65,22 +79,14 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         history.push(loginPath);
       }
     },
-    links: isDev
-      ? [
-          <Link to="/umi/plugin/openapi" target="_blank">
-            <LinkOutlined />
-            <span>openAPI 文档</span>
-          </Link>,
-          <Link to="/~docs">
-            <BookOutlined />
-            <span>业务组件文档</span>
-          </Link>,
-        ]
-      : [],
     menuHeaderRender: undefined,
+    menuDataRender: () => {
+      return initialState?.currentMenu;
+    },
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     ...initialState?.settings,
+    iconfontUrl:"//at.alicdn.com/t/font_2112134_uyx99817ji.js",
   };
 };
 
@@ -116,25 +122,25 @@ const errorHandler = (error: ResponseError) => {
         });
       }
       break;
-  case 'ResponseError':
+    case 'ResponseError':
       if (error.data.message) {
         notification.error({
           message: error.response.status,
           description: error.response.statusText,
         });
       }
-    break;
+      break;
     case 'TypeError':
       if (error.data.message) {
         notification.error({
           message: '当前网络繁忙，请稍后再试',
         });
       }
-    break;
+      break;
     default:
       if (error.data.message) {
         notification.error({
-          message:'服务器繁忙或出现了错误,请联系管理员'
+          message: '服务器繁忙或出现了错误,请联系管理员',
         });
       }
       break;

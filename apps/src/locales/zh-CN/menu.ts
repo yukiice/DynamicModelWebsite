@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 20:53:06
- * @LastEditTime: 2021-04-07 17:16:01
+ * @LastEditTime: 2021-04-08 21:44:27
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/locales/zh-CN/menu.ts
@@ -58,4 +58,29 @@ export default {
   'menu.editor.flow': '流程编辑器',
   'menu.editor.mind': '脑图编辑器',
   'menu.editor.koni': '拓扑编辑器',
+  'menu.basic-list': '管理页面',
+  'menu.admin-list': '管理页面列表',
+  'menu.admin-list.edit': '管理页面编辑',
+  'menu.admin-list.add': '管理页面添加',
+  'menu.menu-list': '菜单列表',
+  'menu.menu-list.edit': '菜单编辑',
+  'menu.menu-list.add': '菜单添加',
+  'menu.group-list': '组合列表',
+  'menu.group-list.edit': '组合编辑',
+  'menu.group-list.add': '组合添加',
+  'menu.rule-list': '规则列表',
+  'menu.rule-list.edit': '规则编辑',
+  'menu.rule-list.add': '规则添加',
+  'menu.model-list': '模型列表',
+  'menu.model-list.design': '模型设计',
+  'menu.model-list.edit': '模型编辑',
+  'menu.model-list.add': '模型添加',
+  'menu.tst-list': '用户列表',
+  'menu.tst-list.design': '用户设计',
+  'menu.tst-list.edit': '用户编辑',
+  'menu.tst-list.add': '用户添加',
+  'menu.ceshi-list': '测试列表',
+  'menu.ceshi-list.design': '测试设计',
+  'menu.ceshi-list.edit': '测试编辑',
+  'menu.ceshi-list.add': '测试添加',
 };

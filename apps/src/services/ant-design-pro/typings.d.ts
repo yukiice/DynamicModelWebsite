@@ -22,7 +22,9 @@ declare namespace API {
     address?: string;
     phone?: string;
   };
-
+  type CurrentMenu = {
+    [key: string]: any;
+  };
   type LoginResult = {
     status?: string;
     type?: string;

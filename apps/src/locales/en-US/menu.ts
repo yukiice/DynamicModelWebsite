@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 20:53:06
- * @LastEditTime: 2021-04-07 17:16:17
+ * @LastEditTime: 2021-04-08 21:39:41
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/locales/en-US/menu.ts
@@ -58,4 +58,21 @@ export default {
   'menu.editor.flow': 'Flow Editor',
   'menu.editor.mind': 'Mind Editor',
   'menu.editor.koni': 'Koni Editor',
+  'menu.basic-list': 'Admin List',
+  'menu.admin-list': 'Admin List',
+  'menu.admin-list.edit': 'Admin Edit',
+  'menu.admin-list.add': 'Admin Add',
+  'menu.menu-list': 'Menu List',
+  'menu.menu-list.edit': 'Menu Edit',
+  'menu.menu-list.add': 'Menu Add',
+  'menu.group-list': 'Group List',
+  'menu.group-list.edit': 'Group Edit',
+  'menu.group-list.add': 'Group Add',
+  'menu.rule-list': 'Rule List',
+  'menu.rule-list.edit': 'Rule Edit',
+  'menu.rule-list.add': 'Rule Add',
+  'menu.model-list': 'Model List',
+  'menu.model-list.design': 'Model Design',
+  'menu.model-list.edit': 'Model Edit',
+  'menu.model-list.add': 'Model Add',
 };

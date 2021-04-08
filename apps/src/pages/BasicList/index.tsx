@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 21:00:38
- * @LastEditTime: 2021-04-08 18:00:13
+ * @LastEditTime: 2021-04-08 21:29:43
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/index.tsx
@@ -10,7 +10,7 @@ import { memo, useState, useEffect } from 'react';
 import { Table, Space, Row, Col, Pagination, Card, Button, Modal, Tooltip, Form } from 'antd';
 import { message } from 'antd';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
-import { useRequest, useIntl, history } from 'umi';
+import { useRequest, useIntl, history,useLocation } from 'umi';
 import { useSessionStorageState, useToggle } from 'ahooks';
 import { stringify } from 'query-string';
 //引入样式等外部文件
@@ -25,6 +25,7 @@ import { submitFieldAdaptor } from './helper';
 
 function BasicList() {
   const intl = useIntl();
+  const location = useLocation()
   const { confirm } = Modal;
   const [searchForm] = Form.useForm();
   // useState
@@ -42,13 +43,13 @@ function BasicList() {
   // effect
   useEffect(() => {
     init.run();
-  }, [pageQuery, sortQuery]);
+  }, [pageQuery, sortQuery,location.pathname]);
   useEffect(() => {
     modalUrl && setModalVisible(true);
   }, [modalUrl]);
   const init = useRequest<{ data: BasicListApi.ListData }>((values: any) => {
     return {
-      url: `https://public-api-v2.aspirantzhang.com/api/admins?X-API-KEY=antd${pageQuery}${sortQuery}`,
+      url: `https://public-api-v2.aspirantzhang.com${location.pathname.replace('/basic-list','')}?X-API-KEY=antd${pageQuery}${sortQuery}`,
       params: values,
       paramsSerializer: (params: any) => {
         return stringify(params, { arrayFormat: 'comma', skipEmptyString: true, skipNull: true });

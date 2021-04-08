@@ -1,7 +1,7 @@
 ﻿/*
  * @Author: your name
  * @Date: 2021-04-01 20:53:06
- * @LastEditTime: 2021-04-08 11:28:13
+ * @LastEditTime: 2021-04-08 21:38:13
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/config/routes.ts
@@ -50,20 +50,19 @@ export default [
     path: '/list',
     component: './TableList',
   },
+   // singlepage
+   {
+    path: '/basic-list/api/*/*',
+    component: './BasicList/components/Page',
+  },
   // basicList
   {
     name: 'list.basic-list',
     icon: 'table',
-    path: '/basiclist',
+    path: '/basic-list/*',
     component: './BasicList',
   },
-  // singlepage
-  {
-    name: 'list.single-page',
-    icon: 'table',
-    path: '/basic-list/api/admins/*',
-    component: './BasicList/components/Page',
-  },
+
   {
     path: '/',
     redirect: '/welcome',
