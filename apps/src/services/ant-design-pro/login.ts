@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2021-04-01 20:53:06
+ * @LastEditTime: 2021-04-09 16:24:24
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /DynamicModelWebsite/apps/src/services/ant-design-pro/login.ts
+ */
 // @ts-ignore
 /* eslint-disable */
 import { request } from 'umi';
@@ -16,6 +24,26 @@ export async function getFakeCaptcha(
     params: {
       ...params,
     },
+    ...(options || {}),
+  });
+}
+
+/** 登录接口 POST /api/login/outLogin */
+export async function outLogin(options?: { [key: string]: any }) {
+  return request<Record<string, any>>('/api/admins/logout', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 登录接口 POST /api/login/account */
+export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
+  return request<API.LoginResult>('/api/admins/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
     ...(options || {}),
   });
 }

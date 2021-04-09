@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-07 16:38:16
- * @LastEditTime: 2021-04-08 11:44:33
+ * @LastEditTime: 2021-04-09 20:19:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/Page.tsx
@@ -20,10 +20,10 @@ function Page() {
   const [form] = Form.useForm();
   const location = useLocation();
   const init = useRequest<{ data: BasicListApi.PageData }>(
-    `https://public-api-v2.aspirantzhang.com${location.pathname.replace(
+    `${location.pathname.replace(
       '/basic-list',
       '',
-    )}?X-API-KEY=antd`,
+    )}`,
     {
       // manual:true,
       onError: () => {
@@ -38,11 +38,10 @@ function Page() {
       message.loading({ content: 'Please wait a moment ......', key: 'process', duration: 0 });
       const { uri, method, ...formValues } = value;
       return {
-        url: `https://public-api-v2.aspirantzhang.com${uri}`,
+        url: `${uri}`,
         method: method,
         data: {
-          ...submitFieldAdaptor(formValues),
-          'X-API-KEY': 'antd',
+          ...submitFieldAdaptor(formValues)
         },
       };
     },

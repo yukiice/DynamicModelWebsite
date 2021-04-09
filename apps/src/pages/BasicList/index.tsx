@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 21:00:38
- * @LastEditTime: 2021-04-08 21:29:43
+ * @LastEditTime: 2021-04-09 21:57:51
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/index.tsx
@@ -10,8 +10,8 @@ import { memo, useState, useEffect } from 'react';
 import { Table, Space, Row, Col, Pagination, Card, Button, Modal, Tooltip, Form } from 'antd';
 import { message } from 'antd';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
-import { useRequest, useIntl, history,useLocation } from 'umi';
-import { useSessionStorageState, useToggle } from 'ahooks';
+import { useRequest, useIntl, history,useLocation} from 'umi';
+import { useSessionStorageState, useToggle,useUpdateEffect } from 'ahooks';
 import { stringify } from 'query-string';
 //引入样式等外部文件
 import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
@@ -22,7 +22,6 @@ import ColumnBuilder from './components/ColumnBuilder';
 import SearchBuilder from './components/SearchBuilder';
 import Modals from './Modals';
 import { submitFieldAdaptor } from './helper';
-
 function BasicList() {
   const intl = useIntl();
   const location = useLocation()
@@ -41,31 +40,45 @@ function BasicList() {
   );
   const [searchVisible, setSearchVisible] = useToggle(false);
   // effect
-  useEffect(() => {
+  useUpdateEffect(() => {
     init.run();
-  }, [pageQuery, sortQuery,location.pathname]);
+  }, [pageQuery, sortQuery]);
+  useUpdateEffect(()=>{
+    init.run(true)
+  },[location.pathname])
   useEffect(() => {
     modalUrl && setModalVisible(true);
   }, [modalUrl]);
   const init = useRequest<{ data: BasicListApi.ListData }>((values: any) => {
+    if (values === true) {
+      return {
+        url: `${location.pathname.replace('/basic-list','')}`
+      };
+    }
     return {
-      url: `https://public-api-v2.aspirantzhang.com${location.pathname.replace('/basic-list','')}?X-API-KEY=antd${pageQuery}${sortQuery}`,
+      url: `${location.pathname.replace('/basic-list','')}?${pageQuery}${sortQuery}`,
       params: values,
       paramsSerializer: (params: any) => {
         return stringify(params, { arrayFormat: 'comma', skipEmptyString: true, skipNull: true });
       },
     };
-  });
+  },
+  {
+    onSuccess:()=>{
+      setSelectedRowKeys([])
+      setSelectedRows([])
+    }
+  }
+  );
   const request = useRequest(
     (value: any) => {
       message.loading({ content: 'Please wait a moment ......', key: 'process', duration: 0 });
       const { uri, method, ...formValues } = value;
       return {
-        url: `https://public-api-v2.aspirantzhang.com${uri}`,
+        url: `${uri}`,
         method: method,
         data: {
-          ...formValues,
-          'X-API-KEY': 'antd',
+          ...formValues
         },
       };
     },
@@ -76,6 +89,7 @@ function BasicList() {
           content: data?.message,
           key: 'process',
         });
+        init.run()
       },
       formatResult: (res: any) => {
         return res;
@@ -213,6 +227,8 @@ function BasicList() {
                     onClick={() => {
                       init.run();
                       searchForm.resetFields();
+                      setSelectedRowKeys([])
+                      setSelectedRows([])
                     }}
                   >
                     Clear

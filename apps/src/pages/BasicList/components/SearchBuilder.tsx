@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-08 14:22:05
- * @LastEditTime: 2021-04-08 19:37:19
+ * @LastEditTime: 2021-04-09 22:02:13
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/SearchBuilder.tsx
@@ -56,7 +56,7 @@ function SearchBuilder(data?: BasicListApi.Field[]) {
             );
           case 'switch':
             return (
-              <Col  key={item.key}>
+              <Col   key={item.key}>
                 <Form.Item {...basicAttr} valuePropName="checked">
                   <Select>
                     {(item.data || []).map((items: any) => {

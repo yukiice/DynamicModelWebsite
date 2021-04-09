@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 20:53:06
- * @LastEditTime: 2021-04-08 20:54:14
+ * @LastEditTime: 2021-04-09 20:15:50
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/services/ant-design-pro/api.ts
@@ -12,14 +12,14 @@ import { request } from 'umi';
 
 /** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
-  return request<API.CurrentUser>('/api/currentUser', {
+  return request<API.CurrentUser>('/api/admins/info', {
     method: 'GET',
     ...(options || {}),
   });
 }
 
 export async function currentMenu(options?: { [key: string]: any }){
-  return request<API.CurrentMenu>('https://public-api-v2.aspirantzhang.com/api/menus/backend', {
+  return request<API.CurrentMenu>('/api/menus/backend', {
     method: 'GET',
     ...(options || {}),
   });

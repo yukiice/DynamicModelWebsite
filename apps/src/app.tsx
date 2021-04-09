@@ -10,7 +10,7 @@ import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import { currentMenu as queryCurrentMenu } from './services/ant-design-pro/api';
 // import { BookOutlined, LinkOutlined } from '@ant-design/icons';
 
-const isDev = process.env.NODE_ENV === 'development';
+// const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
 /** 获取用户信息比较慢的时候会展示一个 loading */

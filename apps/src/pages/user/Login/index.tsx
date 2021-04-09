@@ -11,8 +11,7 @@ import React, { useState } from 'react';
 import ProForm, { ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { useIntl, Link, history, FormattedMessage, SelectLang, useModel } from 'umi';
 import Footer from '@/components/Footer';
-import { login } from '@/services/ant-design-pro/api';
-import { getFakeCaptcha } from '@/services/ant-design-pro/login';
+import { login ,getFakeCaptcha} from '@/services/ant-design-pro/login';
 
 import styles from './index.less';
 
@@ -49,10 +48,12 @@ const Login: React.FC = () => {
 
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
+    const userMenu  =await initialState?.fetchUserMenu?.()
     if (userInfo) {
       setInitialState({
         ...initialState,
         currentUser: userInfo,
+        currentMenu:userMenu
       });
     }
   };
@@ -62,7 +63,7 @@ const Login: React.FC = () => {
     try {
       // 登录
       const msg = await login({ ...values, type });
-      if (msg.status === 'ok') {
+      if (msg.success === true) {
         message.success('登录成功！');
         await fetchUserInfo();
         goto();

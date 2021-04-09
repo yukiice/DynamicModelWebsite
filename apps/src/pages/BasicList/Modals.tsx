@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-04 17:06:01
- * @LastEditTime: 2021-04-08 11:38:29
+ * @LastEditTime: 2021-04-09 20:18:39
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/Modal.tsx
@@ -20,7 +20,7 @@ function Modals(props: any) {
   const [form] = Form.useForm();
   // 获取接口数据
   const init = useRequest<{ data: BasicListApi.PageData }>(
-    `https://public-api-v2.aspirantzhang.com${modalUrl}?X-API-KEY=antd`,
+    `${modalUrl}`,
     {
       manual: true,
       // 错误捕捉
@@ -36,11 +36,10 @@ function Modals(props: any) {
       message.loading({ content: 'Please wait a moment ......', key: 'process', duration: 0 });
       const { uri, method, ...formValues } = value;
       return {
-        url: `https://public-api-v2.aspirantzhang.com${uri}`,
+        url: `${uri}`,
         method: method,
         data: {
-          ...submitFieldAdaptor(formValues),
-          'X-API-KEY': 'antd',
+          ...submitFieldAdaptor(formValues)
         },
       };
     },
