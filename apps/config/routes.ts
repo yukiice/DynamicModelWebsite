@@ -62,6 +62,13 @@ export default [
     path: '/basic-list/*',
     component: './BasicList',
   },
+  // modaldesign
+  {
+    name: 'model-design',
+    icon: 'table',
+    path: '/model-design/',
+    component: './ModalDesign',
+  },
 
   {
     path: '/',
