@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-01 20:53:06
- * @LastEditTime: 2021-04-08 21:44:27
+ * @LastEditTime: 2021-04-12 11:13:58
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/locales/zh-CN/menu.ts
@@ -83,4 +83,5 @@ export default {
   'menu.ceshi-list.design': '测试设计',
   'menu.ceshi-list.edit': '测试编辑',
   'menu.ceshi-list.add': '测试添加',
+  "menu.model-design":'模型列表',
 };

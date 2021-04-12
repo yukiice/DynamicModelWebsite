@@ -1,17 +1,17 @@
 /*
  * @Author: your name
  * @Date: 2021-04-10 17:50:42
- * @LastEditTime: 2021-04-11 21:52:16
+ * @LastEditTime: 2021-04-12 15:27:11
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/ModalDesign/index.tsx
  */
+import { useState } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import {
   SchemaForm,
   SchemaMarkupField as Field,
   FormEffectHooks,
-  FormPath,
   createFormActions,
 } from '@formily/antd';
 import { Button } from 'antd';
@@ -25,12 +25,28 @@ import Modals from './Modals';
 const modelDesignActions = createFormActions();
 
 const ModalDesign = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentFieldPath, setCurrentFieldPath] = useState('');
+
   const onSubmit = (values: any) => {
     console.log(values);
   };
 
-  const { onFieldValueChange$ } = FormEffectHooks;
+  // 弹窗提交事件
+  const modalSubmitHandler = (value: any) => {
+    setModalVisible(false)
+    modelDesignActions.setFieldValue(currentFieldPath,value)
+  };
+  const { onFieldValueChange$, onFieldChange$ } = FormEffectHooks;
   const modelDesignEffect: IFormEffect = (_, actions) => {
+    // 点击data按钮弹窗展现
+    onFieldChange$('fieldsCard.fields.*.data').subscribe((state) => {
+      if (state.active === true) {
+        setCurrentFieldPath(state.path as string);
+        setModalVisible(true);
+      }
+    });
+    // 表格操作联动
     onFieldValueChange$('fieldsCard.fields.*.type').subscribe((state) => {
       // if (state.value === 'number') {
       //   actions.setFieldValue(
@@ -41,12 +57,14 @@ const ModalDesign = () => {
       //   );
       // }
       if (state.value === 'switch' || state.value === 'radio') {
-        actions.setFieldValue(state.path.replace('type', 'data'), (state: IFieldState) => {
+        actions.setFieldState(state.path.replace('type', 'data'), (state: IFieldState) => {
           state.editable = true;
+          state.required = true;
         });
       } else {
-        actions.setFieldValue(state.path.replace('type', 'data'), (state: IFieldState) => {
+        actions.setFieldState(state.path.replace('type', 'data'), (state: IFieldState) => {
           state.editable = false;
+          state.required = false;
         });
       }
     });
@@ -74,8 +92,11 @@ const ModalDesign = () => {
                 title="Data"
                 name="data"
                 x-component="Button"
-                x-component-props={{ children: 'Data' }}
-              ></Field>
+                x-component-props={{
+                  children: 'Data',
+                  onClick: () => {},
+                }}
+              />
               <Field title="List Sorter" name="listSorter" x-component="Checkbox" />
               <Field title="Hide InColumn" name="hideInColumn" x-component="Checkbox" />
               <Field title="Edit Disabled" name="editDisabled" x-component="Checkbox" />
@@ -168,7 +189,13 @@ const ModalDesign = () => {
       ></FooterToolbar>
 
       {/* 弹窗组件 */}
-      <Modals modelVisible={true} modalOnCancel={()=>{}} modalUrl='1'></Modals>
+      <Modals
+        modelVisible={modalVisible}
+        modalOnCancel={() => {
+          setModalVisible(false);
+        }}
+        modalSubmitHandler={modalSubmitHandler}
+      ></Modals>
     </PageContainer>
   );
 };

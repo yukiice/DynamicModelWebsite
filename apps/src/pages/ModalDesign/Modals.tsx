@@ -1,17 +1,28 @@
 /*
  * @Author: your name
  * @Date: 2021-04-04 17:06:01
- * @LastEditTime: 2021-04-11 21:49:50
+ * @LastEditTime: 2021-04-12 15:13:28
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/BasicList/components/Modal.tsx
  */
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useRequest } from 'umi';
-import { Modal, Form, Input, message, Tag, Spin } from 'antd';
-import moment from 'moment';
+import {} from 'react';
+import {
+  SchemaForm,
+  SchemaMarkupField as Field,
+  FormEffectHooks,
+  FormPath,
+  createFormActions,
+} from '@formily/antd';
+import { Button, message, Modal } from 'antd';
+import { Input, FormCard, ArrayTable, Select, Checkbox } from '@formily/antd-components';
+
+const modalAction = createFormActions();
+
 function Modals(props: any) {
-  const { modelVisible, modalOnCancel, modalUrl } = props;
+  const { modelVisible, modalOnCancel,modalSubmitHandler } = props;
 
   // 表单提交请求
   const request = useRequest(
@@ -22,7 +33,7 @@ function Modals(props: any) {
         url: `${uri}`,
         method: method,
         data: {
-          ...formValues
+          ...formValues,
         },
       };
     },
@@ -55,13 +66,10 @@ function Modals(props: any) {
     //  1.表单提交 2.拿到数据  3.发送请求
     switch (action.action) {
       case 'submit':
-
         break;
       case 'cancel':
-
         break;
       case 'reset':
-
         break;
       default:
         break;
@@ -73,10 +81,23 @@ function Modals(props: any) {
       <Modal
         visible={modelVisible}
         onCancel={modalOnCancel}
+        onOk={()=>{
+          modalAction.submit()
+        }}
         maskClosable={false}
         forceRender
+        focusTriggerAfterClose={false}
       >
-        modalOk
+        <SchemaForm components={{ ArrayTable, Input }} actions={modalAction} onSubmit={modalSubmitHandler}>
+          <FormCard title="Fields" name="fieldsCard">
+            <Field name="data" type="array" x-component="ArrayTable">
+              <Field type="object">
+                <Field title="Title" name="title" x-component="Input"></Field>
+                <Field title="Value" name="value" x-component="Input"></Field>
+              </Field>
+            </Field>
+          </FormCard>
+        </SchemaForm>
       </Modal>
     </div>
   );
