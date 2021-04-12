@@ -1,12 +1,13 @@
 /*
  * @Author: your name
  * @Date: 2021-04-10 17:50:42
- * @LastEditTime: 2021-04-12 15:27:11
+ * @LastEditTime: 2021-04-12 20:21:46
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /DynamicModelWebsite/apps/src/pages/ModalDesign/index.tsx
  */
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
+import { useSetState } from 'ahooks';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import {
   SchemaForm,
@@ -16,7 +17,7 @@ import {
 } from '@formily/antd';
 import { Button } from 'antd';
 import { Input, FormCard, ArrayTable, Select, Checkbox } from '@formily/antd-components';
-import { IFormEffect, IFieldState } from '@formily/react/lib';
+import type { IFormEffect, IFieldState } from '@formily/react/lib';
 import * as enums from './enums';
 import { schemaExample } from './initialValues';
 import 'antd/dist/antd.css';
@@ -27,15 +28,22 @@ const modelDesignActions = createFormActions();
 const ModalDesign = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentFieldPath, setCurrentFieldPath] = useState('');
-
+  const [modalState, setModalState] = useSetState({
+    type: '',
+    values: {},
+  });
+  useEffect(()=>{
+    modalState.type && setModalVisible(true)
+  },[modalState.type])
   const onSubmit = (values: any) => {
     console.log(values);
   };
 
   // 弹窗提交事件
   const modalSubmitHandler = (value: any) => {
-    setModalVisible(false)
-    modelDesignActions.setFieldValue(currentFieldPath,value)
+    setModalVisible(false);
+    modelDesignActions.setFieldValue(currentFieldPath, value.data);
+    setModalState({ type: '', values: {} });
   };
   const { onFieldValueChange$, onFieldChange$ } = FormEffectHooks;
   const modelDesignEffect: IFormEffect = (_, actions) => {
@@ -43,6 +51,11 @@ const ModalDesign = () => {
     onFieldChange$('fieldsCard.fields.*.data').subscribe((state) => {
       if (state.active === true) {
         setCurrentFieldPath(state.path as string);
+        // 取值
+        setModalState({
+          values: state.value,
+          type: actions.getFieldValue(state.path?.replace('data', 'type')),
+        });
         setModalVisible(true);
       }
     });
@@ -68,6 +81,13 @@ const ModalDesign = () => {
         });
       }
     });
+
+    // 路由联动
+    onFieldChange$('basicCard.routeName').subscribe(({value})=>{
+      actions.setFieldState('*.*.*.uri',(state:IFieldState)=>{
+        state.value =  state.value?.replace('admins',value )
+      })
+    })
   };
   return (
     <PageContainer>
@@ -193,8 +213,10 @@ const ModalDesign = () => {
         modelVisible={modalVisible}
         modalOnCancel={() => {
           setModalVisible(false);
+          setModalState({ type: '', values: {} });
         }}
         modalSubmitHandler={modalSubmitHandler}
+        modalState = {modalState}
       ></Modals>
     </PageContainer>
   );
